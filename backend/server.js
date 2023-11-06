@@ -30,21 +30,20 @@ app.use("/api/users", userRoute);
 app.use("/api/upload", imageUploadRoutes);
 const __dirname = path.resolve();
 
-app.use("/uploads", express.static(path.join(__dirname, "/uploads")));
+// Serve the Vite build output
+app.use(express.static(path.join(__dirname, "frontend/dist")));
 
 if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "/frontend/build")));
-
   app.get("*", (req, res) => {
-    res.sendFile(path.resolve(__dirname, "frontend", "build", "index.html"));
+    res.sendFile(path.resolve(__dirname, "frontend/dist/index.html"));
   });
 } else {
   app.get("/", (req, res) => {
-    res.send(`Api/ Server running on port ${port}!`);
+    res.send(`API/Server running on port ${port}!`);
   });
 }
 
 app.use(notFound);
 app.use(errorHandler);
 
-app.listen(port, () => console.log(`app listening on port ${port}!`));
+app.listen(port, () => console.log(`App listening on port ${port}!`));

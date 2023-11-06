@@ -46,4 +46,8 @@ export default defineConfig({
   preview: {
     port: 3030,
   },
+  build: {
+    outDir: 'dist', // Output directory for production build
+    assetsDir: '', // Relative path for assets in your HTML file
+  },
 });
