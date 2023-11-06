@@ -9,7 +9,7 @@ export default function BlogPage() {
   return (
     <>
       <Helmet>
-        <title> Blog | SKT </title>
+        <title> SKT Student Council</title>
       </Helmet>
 
       <BlogView />

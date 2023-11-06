@@ -9,7 +9,7 @@ export default function UserPage() {
   return (
     <>
       <Helmet>
-        <title> User Profile | SKT </title>
+        <title>Profile | SKT </title>
       </Helmet>
 
       <UserProfileView />
