@@ -5,6 +5,7 @@ import fs from "fs";
 import sharp from "sharp";
 
 const router = express.Router();
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "uploads/");
@@ -38,12 +39,11 @@ const upload = multer({
 router.post("/", upload.single("image"), async (req, res) => {
   // Optimize the uploaded image using sharp
   sharp(req.file.path)
-    .resize(800, 600) // Adjust the dimensions as needed
+    .resize(800, 600) //
     .toFile(`uploads/optimized-${req.file.filename}`, (err, info) => {
       if (err) {
         return res.status(500).json({ error: "Error optimizing image" });
       }
-      // Delete the original unoptimized image
       fs.unlinkSync(req.file.path);
       res.send({
         message: "Image uploaded and optimized successfully",
