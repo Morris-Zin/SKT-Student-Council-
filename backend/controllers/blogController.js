@@ -118,7 +118,6 @@ const createBlog = asyncHandler(async (req, res) => {
 
   if (!image) image = `/assets/images/covers/cover_${num}.jpg`;
   try {
-    console.log("I was inside");
     const newBlog = new Blog({
       title,
       content,

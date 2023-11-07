@@ -1,16 +1,17 @@
 import React, { useState } from 'react';
-import { Grid, TextField, Typography, Button } from '@mui/material';
+import { Grid, TextField, Typography, Button, Paper, Box, InputLabel } from '@mui/material';
 import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css'; // Import styles
+import 'react-quill/dist/quill.snow.css';
 import { useNavigate } from 'react-router-dom';
 import {
   useCreateBlogMutation,
-  useUploadBlogImageMutation,
   useDeleteImageMutation,
+  useUploadBlogImageMutation,
 } from 'src/slices/blogsApiSlice';
 import { toast } from 'react-toastify';
 import { useSelector } from 'react-redux';
 import { RouterLink } from 'src/routes/components';
+import { Icon } from '@iconify/react';
 
 const BlogCreate = () => {
   const { userInfo } = useSelector((state) => state.auth);
@@ -19,38 +20,51 @@ const BlogCreate = () => {
     content: '',
   });
   const [uploadedImage, setImage] = useState('/assets/images/covers/cover_1.jpg');
+  const [file, setFile] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [uploadImage] = useUploadBlogImageMutation();
-  const [deleteImage] = useDeleteImageMutation();
-  const [prevSelectedImage, setPrevSelectedImage] = useState(null);
-
+  const [imageSrc, setImageSrc] = useState('');
   const navigate = useNavigate();
   const [createBlog] = useCreateBlogMutation();
+  const [deleteImage] = useDeleteImageMutation();
+
+  const handleSelectFile = (e) => {
+    const selectedFile = e.target.files[0];
+    setFile(selectedFile);
+    if (selectedFile) {
+      const imageURL = URL.createObjectURL(selectedFile);
+      setImageSrc(imageURL);
+    }
+  };
+
+  const handleUpload = async () => {
+    try {
+      setLoading(true);
+      if (uploadedImage !== '/assets/images/covers/cover_1.jpg') {
+        // Extract public ID from the image URL
+        const publicId = uploadedImage.split('/').pop().split('.')[0];
+        await deleteImage(publicId);
+      }
+
+      const data = new FormData();
+      data.append('image', file);
+      const response = await uploadImage(data);
+      setImage(response.data.secure_url);
+      toast.success('Image uploaded successfully');
+    } catch (error) {
+      alert(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleInputChange = (field, value) => {
     setBlogData({ ...blogData, [field]: value });
   };
 
-  const uploadFileHandler = async (e) => {
-    if (prevSelectedImage) {
-      try {
-        await deleteImage(prevSelectedImage.split('/uploads/')[1]);
-      } catch (error) {
-        console.log(error);
-      }
-    }
-    const formData = new FormData();
-    formData.append('image', e.target.files[0]);
-    try {
-      const res = await uploadImage(formData).unwrap();
-      setPrevSelectedImage(res.img);
-      toast.success(res.message);
-      setImage(res.img);
-    } catch (er) {
-      toast.error(er?.data?.message || 'Something went wrong');
-    }
-  };
   const handleSubmit = async (e) => {
     const { title, content } = blogData;
+
     if (title === '' || content === '') {
       toast.error('Please fill all the fields');
       return;
@@ -70,16 +84,16 @@ const BlogCreate = () => {
   };
 
   return (
-    <div style={{ padding: '10px' }}>
+    <Box p={2}>
       <Button
-        style={{ margin: '0 0 20px 0px' }}
+        style={{ marginBottom: '20px' }}
         href="/"
         LinkComponent={RouterLink}
         variant="outlined"
       >
         Go back
       </Button>
-      <Typography variant="h5" gutterBottom style={{ marginBottom: '20px' }}>
+      <Typography variant="h5" gutterBottom>
         Create Post
       </Typography>
       <Grid container spacing={2}>
@@ -105,20 +119,59 @@ const BlogCreate = () => {
           </div>
         </Grid>
         <Grid item xs={12} style={{ marginTop: '20px' }}>
-          <TextField
+          <input
+            name="file"
+            id="file"
             type="file"
-            name="uploadImage"
-            onChange={(e) => uploadFileHandler(e)}
-            fullWidth
+            onChange={handleSelectFile}
+            accept="image/*"
+            style={{ display: 'none' }}
           />
+          <InputLabel htmlFor="file">
+            <Button
+              variant="contained"
+              component="span"
+              startIcon={<Icon icon="material-symbols:upload" />}
+            >
+              Select File
+            </Button>
+          </InputLabel>
+          {file && (
+            <Typography style={{ marginTop: '20px' }} variant="body1">
+              Your file name - {file.name}
+            </Typography>
+          )}
+          {file && (
+            <Box mt={2}>
+              <Paper elevation={3}>
+                <img
+                  src={imageSrc}
+                  alt="Showing preview"
+                  style={{ maxWidth: '100%', maxHeight: '200px' }}
+                />
+              </Paper>
+            </Box>
+          )}
+          {file && (
+            <div>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleUpload}
+                style={{ marginTop: '20px' }}
+              >
+                {loading ? 'Uploading...' : 'Upload the image'}
+              </Button>
+            </div>
+          )}
         </Grid>
         <Grid item xs={12} style={{ marginTop: '10px' }}>
-          <Button variant="contained" color="primary" onClick={handleSubmit}>
+          <Button disabled={loading} variant="contained" color="primary" onClick={handleSubmit}>
             Create Blog
           </Button>
         </Grid>
       </Grid>
-    </div>
+    </Box>
   );
 };
 

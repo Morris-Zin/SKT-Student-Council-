@@ -1,6 +1,6 @@
 import React, { useState, useEffect, lazy } from 'react';
 import { useSelector } from 'react-redux';
-import { Grid, Typography, Button, TextField } from '@mui/material';
+import { Grid, Typography, Button, TextField, Paper, InputLabel } from '@mui/material';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css'; // Import styles
 import { useNavigate, useParams } from 'react-router-dom';
@@ -11,12 +11,16 @@ import {
   useDeleteImageMutation,
 } from 'src/slices/blogsApiSlice';
 import { toast } from 'react-toastify';
+import { Box } from '@mui/system';
+import { Icon } from '@iconify/react';
 
 const Loader = lazy(() => import('src/components/loader/Loader'));
 
 const Message = lazy(() => import('src/components/message/Message'));
 
 const BlogEdit = () => {
+  const [file, setFile] = useState(null);
+  const [imageSrc, setImageSrc] = useState('');
   const { id: blogId } = useParams();
   const { data: blog, isLoading, error } = useGetBlogByIdQuery(blogId);
   const [editBlog, { isError }] = useEditBlogMutation();
@@ -24,12 +28,10 @@ const BlogEdit = () => {
   const [title, setTitle] = useState('');
   const [image, setImage] = useState('');
   const { userInfo } = useSelector((state) => state.auth);
+  const [loading, setLoading] = useState(false);
 
   const [uploadImage] = useUploadBlogImageMutation();
   const [deleteImage] = useDeleteImageMutation();
-  const [prevSelectedImage, setPrevSelectedImage] = useState(
-    blog?.image.split('/uploads/')[1] || null
-  );
 
   const [blogData, setBlogData] = useState({
     content: '',
@@ -53,35 +55,41 @@ const BlogEdit = () => {
     }
   }, [blog]);
 
-  const uploadFileHandler = async (e) => {
-    console.log(prevSelectedImage);
-    if (prevSelectedImage) {
-      console.log('HI');
-      try {
-        await deleteImage(prevSelectedImage.split('/uploads/')[1]);
-      } catch (errorHappened) {
-        console.log(errorHappened);
-      }
-    }
-    const formData = new FormData();
-    formData.append('image', e.target.files[0]);
+  const handleUpload = async () => {
     try {
-      const res = await uploadImage(formData).unwrap();
-      setPrevSelectedImage(res.img);
-      toast.success(res.message);
-      setImage(res.img);
-    } catch (er) {
-      toast.error(er?.data?.message || 'Something went wrong');
+      setLoading(true);
+      if (image !== '/assets/images/covers/cover_1.jpg') {
+        // Extract public ID from the image URL
+        const publicId = image.split('/').pop().split('.')[0];
+        await deleteImage(publicId);
+      }
+
+      const data = new FormData();
+      data.append('image', file);
+      const response = await uploadImage(data);
+      setImage(response.data.secure_url);
+      toast.success('Image uploaded successfully');
+    } catch (es) {
+      alert(es.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleInputChange = (name, value) => {
     if (name === 'title') {
       setTitle(value); // Update the "title" state directly
-    } else if (name === 'image') {
-      setImage(value); // Update the "image" state directly
     } else {
       setBlogData({ ...blogData, [name]: value }); // Update other fields as before
+    }
+  };
+
+  const handleSelectFile = (e) => {
+    const selectedFile = e.target.files[0];
+    setFile(selectedFile);
+    if (selectedFile) {
+      const imageURL = URL.createObjectURL(selectedFile);
+      setImageSrc(imageURL);
     }
   };
 
@@ -160,16 +168,55 @@ const BlogEdit = () => {
           </div>
         </Grid>
         <Grid item xs={12} style={{ marginTop: '20px' }}>
-          <TextField
+          <input
+            name="file"
+            id="file"
             type="file"
-            name="uploadImage"
-            onChange={(e) => uploadFileHandler(e)}
-            fullWidth
+            onChange={handleSelectFile}
+            accept="image/*"
+            style={{ display: 'none' }}
           />
+          <InputLabel htmlFor="file">
+            <Button
+              variant="contained"
+              component="span"
+              startIcon={<Icon icon="material-symbols:upload" />}
+            >
+              Select File
+            </Button>
+          </InputLabel>
+          {file && (
+            <Typography style={{ marginTop: '20px' }} variant="body1">
+              Your file name - {file.name}
+            </Typography>
+          )}
+          {file && (
+            <Box mt={2}>
+              <Paper elevation={3}>
+                <img
+                  src={imageSrc}
+                  alt="Showing preview"
+                  style={{ maxWidth: '100%', maxHeight: '200px' }}
+                />
+              </Paper>
+            </Box>
+          )}
+          {file && (
+            <div>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleUpload}
+                style={{ marginTop: '20px' }}
+              >
+                {loading ? 'Uploading...' : 'Upload the image'}
+              </Button>
+            </div>
+          )}
         </Grid>
 
         <Grid item xs={12} style={{ marginTop: '10px' }}>
-          <Button variant="contained" color="primary" onClick={handleSubmit}>
+          <Button variant="contained" disabled={loading} color="primary" onClick={handleSubmit}>
             Save Changes
           </Button>
         </Grid>
