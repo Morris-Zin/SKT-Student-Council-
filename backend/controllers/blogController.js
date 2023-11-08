@@ -96,6 +96,7 @@ const getBlogById = asyncHandler(async (req, res) => {
     })
     .populate("comments.author")
     .exec();
+  blogPost.comments = blogPost.comments.reverse();
   if (blogPost) {
     return res.json(blogPost);
   }

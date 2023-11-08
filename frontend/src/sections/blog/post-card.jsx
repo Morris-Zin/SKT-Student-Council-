@@ -12,6 +12,7 @@ import { fDate } from 'src/utils/format-time';
 import { fShortenNumber } from 'src/utils/format-number';
 import Iconify from 'src/components/iconify';
 import SvgColor from 'src/components/svg-color';
+import { useNavigate } from 'react-router-dom';
 
 // ----------------------------------------------------------------------
 
@@ -21,6 +22,7 @@ export default function PostCard({ post, index }) {
   const latestPostLarge = index === 0;
 
   const latestPost = index === 1 || index === 2;
+  const navigate = useNavigate();
 
   const renderAvatar = (
     <Avatar
@@ -146,7 +148,7 @@ export default function PostCard({ post, index }) {
 
   return (
     <Grid xs={12} sm={latestPostLarge ? 12 : 6} md={latestPostLarge ? 6 : 3}>
-      <Card>
+      <Card onClick={() => navigate(`/blog/${_id}`)} style={{ cursor: 'pointer' }}>
         <Box
           sx={{
             position: 'relative',
