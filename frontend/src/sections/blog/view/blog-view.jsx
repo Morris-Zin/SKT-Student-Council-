@@ -10,7 +10,7 @@ import Message from 'src/components/message/Message';
 import Typography from '@mui/material/Typography';
 import Iconify from 'src/components/iconify';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Card, CardContent } from '@mui/material';
+import { Card, CardContent, Popover } from '@mui/material';
 import PostSort from '../post-sort';
 import PostSearch from '../post-search';
 import PaginationComponent from '../../../components/paginate/pagination';
@@ -18,13 +18,35 @@ import PaginationComponent from '../../../components/paginate/pagination';
 const PostCard = lazy(() => import('../post-card'));
 
 export default function BlogView() {
-  const { pageNumber, keyword, sortBy } = useParams();
-  const { data, isLoading, error, refetch } = useGetBlogsQuery({ keyword, pageNumber, sortBy });
+  const { pageNumber, keyword, sortBy, tag } = useParams();
   const navigate = useNavigate();
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  const availableTags = ['All Posts', 'General', 'Announcement', 'Event', 'Help'];
+  const [selectedView, setSelectedView] = useState('All Posts');
+  const { data, isLoading, error, refetch } = useGetBlogsQuery({
+    keyword,
+    pageNumber,
+    sortBy,
+    tag,
+  });
 
   const handleSortChange = (newSortBy) => {
-    // Update the URL with the selected sorting criteria
     navigate(`/${pageNumber || '1'}/${keyword || ''}/${newSortBy}`);
+  };
+
+  const handleViewOptionClick = async (view) => {
+    setSelectedView(view);
+    navigate(`/tag/${view}`);
+    handleClose();
+  };
+
+  const handleViewClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
   };
 
   let renderContent;
@@ -48,7 +70,12 @@ export default function BlogView() {
     renderContent = (
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-          <Typography variant="h4">Posts</Typography>
+          <Stack direction="row" alignItems="center" spacing={1}>
+            <Typography variant="h4">{selectedView && selectedView} </Typography>
+            <Button onClick={handleViewClick} color="inherit">
+              <Iconify icon="fluent:chevron-down-24-filled" />
+            </Button>
+          </Stack>
 
           <Button
             LinkComponent={RouterLink}
@@ -59,14 +86,39 @@ export default function BlogView() {
           >
             New Post
           </Button>
+          <Popover
+            open={Boolean(anchorEl)}
+            anchorEl={anchorEl}
+            onClose={handleClose}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'right',
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'right',
+            }}
+          >
+            <Stack p={2}>
+              {availableTags.map((t) => (
+                <Button
+                  color="inherit"
+                  key={t}
+                  onClick={() => handleViewOptionClick(t)}
+                  // Handle the logic for changing the view based on the selected tag
+                >
+                  {t}
+                </Button>
+              ))}
+            </Stack>
+          </Popover>
         </Stack>
 
         <Stack mb={5} direction="row" alignItems="center" justifyContent="space-between">
           <PostSearch posts={data?.blogs} />
           <PostSort
             onSortChange={handleSortChange}
-            selectedSort={sortBy} // Pass the sortBy prop
-
+            selectedSort={sortBy}
             options={[
               { value: 'newest', label: 'Newest' },
               { value: 'mostPopular', label: 'Most Popular' }, // Update label

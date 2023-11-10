@@ -1,5 +1,16 @@
 import React, { useState } from 'react';
-import { Grid, TextField, Typography, Button, Paper, Box, InputLabel } from '@mui/material';
+import {
+  Grid,
+  TextField,
+  Typography,
+  Button,
+  Paper,
+  Box,
+  InputLabel,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+} from '@mui/material';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { useNavigate } from 'react-router-dom';
@@ -19,6 +30,8 @@ const BlogCreate = () => {
     title: '',
     content: '',
   });
+  const [selectedTag, setSelectedTag] = useState('General');
+  const availableTags = ['General', 'Announcement', 'Help', 'Event'];
   const [uploadedImage, setImage] = useState('/assets/images/covers/cover_1.jpg');
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -35,6 +48,9 @@ const BlogCreate = () => {
       const imageURL = URL.createObjectURL(selectedFile);
       setImageSrc(imageURL);
     }
+  };
+  const handleTagChange = (e) => {
+    setSelectedTag(e.target.value);
   };
 
   const handleUpload = async () => {
@@ -75,6 +91,7 @@ const BlogCreate = () => {
         content,
         author: userInfo._id,
         image: uploadedImage,
+        tag: selectedTag,
       });
       toast.success('Blog created successfully');
       navigate('/');
@@ -105,6 +122,18 @@ const BlogCreate = () => {
             onChange={(e) => handleInputChange('title', e.target.value)}
             fullWidth
           />
+        </Grid>
+        <Grid item xs={12} style={{ marginTop: '10px' }}>
+          <RadioGroup row value={selectedTag} onChange={handleTagChange}>
+            {availableTags.map((tag) => (
+              <FormControlLabel
+                key={tag}
+                value={tag}
+                control={<Radio color="primary" />}
+                label={tag}
+              />
+            ))}
+          </RadioGroup>
         </Grid>
         <Grid item xs={12} style={{ margin: '10px 0px 30px' }}>
           <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -167,7 +196,7 @@ const BlogCreate = () => {
         </Grid>
         <Grid item xs={12} style={{ marginTop: '10px' }}>
           <Button disabled={loading} variant="contained" color="primary" onClick={handleSubmit}>
-            Create Blog
+            Create Post
           </Button>
         </Grid>
       </Grid>

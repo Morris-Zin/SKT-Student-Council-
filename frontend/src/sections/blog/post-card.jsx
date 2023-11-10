@@ -17,7 +17,7 @@ import { useNavigate } from 'react-router-dom';
 // ----------------------------------------------------------------------
 
 export default function PostCard({ post, index }) {
-  const { _id, title, image, author, createdAt, numComments } = post;
+  const { _id, title, image, author, createdAt, numComments, tag } = post;
 
   const latestPostLarge = index === 0;
 
@@ -44,6 +44,24 @@ export default function PostCard({ post, index }) {
         }),
       }}
     />
+  );
+  const renderTag = (
+    <Box
+      sx={{
+        position: 'absolute',
+        backgroundColor: '#194f96',
+        color: 'common.white',
+        zIndex: 10,
+        left: 0,
+        bottom: 0,
+        px: 2,
+        py: 0.5,
+        fontSize: '10px', // Adjust the font size to your preference
+        borderRadius: '0px 10px', // Add rounded corners
+      }}
+    >
+      {tag}
+    </Box>
   );
 
   const renderTitle = (
@@ -149,6 +167,7 @@ export default function PostCard({ post, index }) {
   return (
     <Grid xs={12} sm={latestPostLarge ? 12 : 6} md={latestPostLarge ? 6 : 3}>
       <Card onClick={() => navigate(`/blog/${_id}`)} style={{ cursor: 'pointer' }}>
+        {renderTag}
         <Box
           sx={{
             position: 'relative',

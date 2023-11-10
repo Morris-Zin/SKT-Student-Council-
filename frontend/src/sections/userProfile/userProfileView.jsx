@@ -51,7 +51,6 @@ export default function UserProfileView() {
 
   useEffect(() => {
     if (user) {
-      console.log(user);
       setUserData({
         name: user.name,
         email: user.email,
@@ -64,7 +63,11 @@ export default function UserProfileView() {
 
   const validateEmail = () => {
     // Check if email ends with the expected domain
-    if (userData.email.endsWith('.edu.mm')) {
+    if (
+      userData.email.endsWith('.edu.mm') ||
+      userData.email.includes('.edu.mm') ||
+      userData.email.includes('bfi')
+    ) {
       setEmailError(false);
     } else {
       setEmailError(true);

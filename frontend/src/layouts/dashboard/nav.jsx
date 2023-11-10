@@ -48,7 +48,7 @@ export default function Nav({ openNav, onCloseNav }) {
     >
       <Avatar src={account?.avatar} alt="photoURL" />
       <Box sx={{ ml: 2 }}>
-        <Typography variant="subtitle2">{account?.name || "Please authenticate"}</Typography>
+        <Typography variant="subtitle2">{account?.name || 'Please Login'}</Typography>
 
         <Typography variant="body2" sx={{ color: 'text.secondary' }}>
           {account?.isAdmin ? 'Admin' : ''}

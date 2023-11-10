@@ -160,13 +160,13 @@ const getUserById = asyncHandler(async (req, res) => {
 // Put /api/users/:id
 // ADMIN ONLY
 const updateUserById = asyncHandler(async (req, res) => {
-  console.log("I am here");
   const user = await User.findById(req.params.id);
+
   if (user) {
     user.name = req.body.name || user.name;
     user.email = req.body.email || user.email;
     user.avatar = req.body.avatar || user.avatar;
-    user.isAdmin = Boolean(req.body.isAdmin);
+    user.isAdmin = req.body.isAdmin === "True";
     user.yearClass = req.body.yearClass || user.yearClass;
     const updatedUser = await user.save();
 

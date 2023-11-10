@@ -62,21 +62,30 @@ const getBlogs = async (req, res) => {
     : {};
 
   const page = parseInt(req.query.pageNumber) || 1;
-  const sortBy = req.query.sortBy || "newest"; // Default to sorting by newest
+  const sortBy = req.query.sortBy || "newest";
   let sortCriteria = {};
 
   if (sortBy === "oldest") {
-    sortCriteria = { createdAt: 1 }; // Sort by createdAt in ascending order (oldest first)
+    sortCriteria = { createdAt: 1 };
   } else if (sortBy === "mostPopular") {
-    sortCriteria = { numComments: -1 }; // Sort by numComments in descending order (most comments first)
+    sortCriteria = { numComments: -1 };
   } else {
-    sortCriteria = { createdAt: -1 }; // Default to sorting by createdAt in descending order (newest first)
+    sortCriteria = { createdAt: -1 };
   }
 
-  //total number of blogs
-  const count = await Blog.countDocuments({ ...keyword });
+  let specifiedView = req?.query?.tag;
+  console.log("specified view", specifiedView);
+  if (specifiedView?.includes("All")) {
+    specifiedView = null;
+  }
 
-  let blogs = await Blog.find({ ...keyword })
+  const tag = specifiedView
+    ? specifiedView?.charAt(0).toUpperCase() + specifiedView?.slice(1)
+    : null;
+  console.log(tag);
+  const count = await Blog.countDocuments({ ...keyword, ...(tag && { tag }) });
+
+  let blogs = await Blog.find({ ...keyword, ...(tag && { tag }) })
     .sort(sortCriteria)
     .limit(pageSize)
     .skip((page - 1) * pageSize)
@@ -109,23 +118,20 @@ const getBlogById = asyncHandler(async (req, res) => {
 //POST request
 
 const createBlog = asyncHandler(async (req, res) => {
-  const { title, content, author, image } = req.body;
+  const { title, content, author, image, tag } = req.body;
   if (!title || !content || !author) {
     throw new Error("All fields are required");
   }
-  console.log("I running blog");
-  const num = Math.floor(Math.random() * 20) + 1;
-  console.log(`image is ${image}- title is ${title} content is ${content}`);
-
-  if (!image) image = `/assets/images/covers/cover_${num}.jpg`;
   try {
+    console.log("Hi");
     const newBlog = new Blog({
       title,
       content,
       author,
-      image,
+      image: image || "/assets/images/covers/cover_1.jpg",
       numComments: 0,
       comments: [],
+      tag: tag,
     });
     const createdBlog = await newBlog.save();
     res.status(201).json(createdBlog);

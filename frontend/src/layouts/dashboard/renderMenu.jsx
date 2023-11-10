@@ -17,7 +17,7 @@ const icon = (name) => (
 );
 
 const RenderMenu = () => {
-  const {userInfo} = useSelector(state => state.auth)
+  const { userInfo } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [logoutApi, { isError }] = useLogoutMutation();
@@ -33,7 +33,6 @@ const RenderMenu = () => {
       }
     }
   };
-  console.log(userInfo, "Admin")
 
   const navConfig = [
     {
@@ -41,6 +40,7 @@ const RenderMenu = () => {
       path: '/',
       icon: icon('ic_blog'),
     },
+  
     // Conditionally show "users" link only if the user is an admin
     ...(userInfo && userInfo.isAdmin
       ? [

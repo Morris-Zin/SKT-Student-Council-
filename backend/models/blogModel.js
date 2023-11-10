@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import User from './userModel.js'; 
+import User from "./userModel.js";
 
 const commentsSchema = new mongoose.Schema(
   {
@@ -29,7 +29,6 @@ const blogSchema = new mongoose.Schema(
     },
     image: {
       type: String,
-      required: true,
     },
     content: {
       type: String,
@@ -40,6 +39,10 @@ const blogSchema = new mongoose.Schema(
       type: Number,
       default: 0,
       required: true,
+    },
+    tag: {
+      type: String,
+      default: "general",
     },
   },
   {

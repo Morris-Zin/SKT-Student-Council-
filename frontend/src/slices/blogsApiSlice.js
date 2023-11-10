@@ -4,10 +4,10 @@ import { apiSlice } from './apiSlice';
 export const blogsApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getBlogs: builder.query({
-      query: ({ pageNumber, keyword, sortBy }) => ({
+      query: ({ pageNumber, keyword, sortBy, tag }) => ({
         url: BLOGS_URL,
         credentials: 'include',
-        params: { pageNumber, keyword, sortBy },
+        params: { pageNumber, keyword, sortBy, tag },
       }),
       providesTags: ['BlogDelete'],
       keepUnusedDataFor: 5,

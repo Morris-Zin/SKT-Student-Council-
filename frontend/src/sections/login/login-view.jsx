@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Card from '@mui/material/Card';
@@ -35,23 +35,38 @@ export default function LoginView() {
   const searchParams = new URLSearchParams(search);
   const redirect = searchParams.get('redirect') || '/';
 
+  const handleClick = useCallback(async () => {
+    try {
+      const res = await login({ email, password }).unwrap();
+      dispatch(setCredentials({ ...res }));
+      navigate(redirect);
+    } catch (error) {
+      toast.error(error?.data?.message || error?.error);
+    }
+  }, [email, password, login, dispatch, redirect, navigate]);
+
   useEffect(() => {
     if (userInfo) {
       navigate(redirect);
     }
-  }, [userInfo, redirect, navigate]);
 
-  const handleClick = async () => {
-    try {
-      console.log("I RUNNN")
-      const res = await login({ email, password }).unwrap();
-      console.log(res)
-      dispatch(setCredentials({ ...res }));
-      navigate(redirect); 
-    } catch (error) {
-      toast.error(error?.data?.message || error?.error);
-    }
-  };
+    const handleKeyPress = (event) => {
+      if (
+        (event.key === 'Enter' || event.key === 'Return') &&
+        !isLoading &&
+        email !== '' &&
+        password !== ''
+      ) {
+        handleClick();
+      }
+    };
+    window.addEventListener('keydown', handleKeyPress);
+
+    return () => {
+      // Cleanup the event listener when the component unmounts
+      window.removeEventListener('keydown', handleKeyPress);
+    };
+  }, [userInfo, redirect, navigate, isLoading, email, password, handleClick]);
 
   const renderForm = (
     <FormControl style={{ width: '100%' }}>
@@ -59,7 +74,9 @@ export default function LoginView() {
         <TextField onChange={(e) => setEmail(e.target.value)} name="email" label="Email address" />
 
         <TextField
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={(e) => {
+            setPassword(e.target.value);
+          }}
           name="password"
           label="Password"
           type={showPassword ? 'text' : 'password'}
@@ -76,8 +93,8 @@ export default function LoginView() {
       </Stack>
 
       <Stack direction="row" alignItems="center" justifyContent="flex-end" sx={{ my: 3 }}>
-        <Link variant="subtitle2" underline="hover">
-          Forgot password?
+        <Link variant="subtitle2" underline="hover" component={RouterLink} to="/">
+          Go back to home?
         </Link>
       </Stack>
 

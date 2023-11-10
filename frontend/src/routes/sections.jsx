@@ -33,6 +33,7 @@ export default function Router() {
       children: [
         { element: <BlogPage />, index: true },
         { path: '/:sortBy', element: <BlogPage /> },
+        { path: '/tag/:tag', element: <BlogPage /> },
         { path: '/search/:keyword', element: <BlogPage /> },
         { path: '/page/:pageNumber', element: <BlogPage /> },
         { path: '/search/:keyword/page/:pageNumber', element: <BlogPage /> },

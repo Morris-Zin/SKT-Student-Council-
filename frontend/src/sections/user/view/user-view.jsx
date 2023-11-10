@@ -1,5 +1,3 @@
-
-
 import { lazy, useState } from 'react';
 import { useGetUsersQuery } from 'src/slices/userApiSlice';
 import { useSelector } from 'react-redux';
@@ -14,19 +12,19 @@ import TablePagination from '@mui/material/TablePagination';
 
 import { emptyRows, applyFilter, getComparator } from '../utils';
 
-const Loader = lazy(()=> import('src/components/loader/Loader'));
+const Loader = lazy(() => import('src/components/loader/Loader'));
 
 const Scrollbar = lazy(() => import('src/components/scrollbar'));
 
-const TableNoData = lazy(()=> import('../table-no-data')); 
+const TableNoData = lazy(() => import('../table-no-data'));
 
-const UserTableHead = lazy(()=> import('../user-table-head'));
+const UserTableHead = lazy(() => import('../user-table-head'));
 
-const UserTableRow = lazy(()=> import('../user-table-row'));
+const UserTableRow = lazy(() => import('../user-table-row'));
 
-const TableEmptyRows = lazy(()=> import('../table-empty-rows'));
+const TableEmptyRows = lazy(() => import('../table-empty-rows'));
 
-const UserTableToolbar = lazy(()=> import('../user-table-toolbar'));
+const UserTableToolbar = lazy(() => import('../user-table-toolbar'));
 // ----------------------------------------------------------------------
 
 export default function UserPage() {
