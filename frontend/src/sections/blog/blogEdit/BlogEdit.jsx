@@ -106,7 +106,6 @@ const BlogEdit = () => {
     }
     try {
       const data = { title, image, content: blogData.content, author: userInfo._id };
-      console.log(data);
       await editBlog({ blogId, data });
       toast.success('Updated successfully');
       navigate(`/blog/${blogId}`);

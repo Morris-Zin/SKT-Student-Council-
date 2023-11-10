@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Autocomplete } from '@mui/material';
 import TextField from '@mui/material/TextField';
@@ -11,6 +12,7 @@ PostSort.propTypes = {
 
 export default function PostSort({ options, onSortChange, selectedSort }) {
   const navigate = useNavigate();
+  const [currentSort, setCurrentSort] = useState(selectedSort);
 
   const handleSortChange = (event, newValue) => {
     if (newValue) {
@@ -24,7 +26,7 @@ export default function PostSort({ options, onSortChange, selectedSort }) {
       style={{ width: '300px' }}
       options={options}
       getOptionLabel={(option) => option.label}
-      value={options.find((option) => option.value === selectedSort)} // Set the selected value
+      value={options.find((option) => option.value === currentSort)}
       onChange={handleSortChange}
       renderInput={(params) => <TextField {...params} label="Sort by" />}
     />

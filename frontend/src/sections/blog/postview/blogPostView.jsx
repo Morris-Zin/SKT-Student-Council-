@@ -53,7 +53,6 @@ function BlogPostDetail() {
 
   const handleEditComment = async (commentId, editedComment) => {
     const data = { blogId, commentId, data: editedComment };
-    console.log(data);
     try {
       await editComment(data);
 
@@ -88,7 +87,6 @@ function BlogPostDetail() {
     confirm({ description: 'Sir it cannot be recovered' })
       .then(async () => {
         try {
-          console.log(blog?.image, 'here');
           await deleteImage(blog?.image.split('/uploads/')[1]);
           await deletePost(blogId);
           toast.success('Blog deleted successfully');

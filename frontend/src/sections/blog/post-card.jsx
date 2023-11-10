@@ -49,7 +49,7 @@ export default function PostCard({ post, index }) {
     <Box
       sx={{
         position: 'absolute',
-        backgroundColor: '#194f96',
+        backgroundColor: 'black',
         color: 'common.white',
         zIndex: 10,
         left: 0,
