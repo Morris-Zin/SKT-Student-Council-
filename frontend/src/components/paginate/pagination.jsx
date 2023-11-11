@@ -1,6 +1,6 @@
 import * as React from 'react';
 import PropTypes from 'prop-types'; // Import PropTypes
-import { Link, MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import Pagination from '@mui/material/Pagination';
 import PaginationItem from '@mui/material/PaginationItem';
 import { Stack } from '@mui/system';
@@ -11,7 +11,6 @@ export default function Content({ pages, page, keyword='' }) {
       <Pagination
         page={page}
         count={pages}
-        color="primary"
         shape="rounded"
         size="large" 
         renderItem={(item) => (

@@ -120,7 +120,7 @@ const BlogEdit = () => {
       [{ font: [] }], // Font selection
       [{ list: 'ordered' }, { list: 'bullet' }], // Ordered and unordered lists
       ['bold', 'italic', 'underline', 'strike'], // Text formatting
-      ['link', 'image'], // Links and images
+      ['link', 'code-block'], // Links and images
       [{ align: [] }], // Text alignment
       ['clean'], // Remove formatting
     ],

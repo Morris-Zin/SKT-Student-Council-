@@ -27,8 +27,10 @@ import { fDateTime } from 'src/utils/format-time';
 import Loader from 'src/components/loader/Loader';
 import { toast } from 'react-toastify';
 import { useConfirm } from 'material-ui-confirm';
+import '../quill.css'
 
 const Comments = lazy(() => import('./Comments'));
+
 
 function BlogPostDetail() {
   const { id: blogId } = useParams();

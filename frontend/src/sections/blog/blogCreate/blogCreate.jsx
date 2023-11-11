@@ -41,6 +41,18 @@ const BlogCreate = () => {
   const [createBlog] = useCreateBlogMutation();
   const [deleteImage] = useDeleteImageMutation();
 
+  const quillModules = {
+    toolbar: [
+      [{ header: '1' }, { header: '2' }, { header: [3, 4, 5, 6] }], // Headers with different sizes
+      [{ font: [] }], // Font selection
+      [{ list: 'ordered' }, { list: 'bullet' }], // Ordered and unordered lists
+      ['bold', 'italic', 'underline', 'strike'], // Text formatting
+      ['link', 'code-block'], // Links and images
+      [{ align: [] }], // Text alignment
+      ['clean'], // Remove formatting
+    ],
+  };
+
   const handleSelectFile = (e) => {
     const selectedFile = e.target.files[0];
     setFile(selectedFile);
@@ -141,6 +153,7 @@ const BlogCreate = () => {
               Content
             </Typography>
             <ReactQuill
+              modules={quillModules}
               style={{ height: '300px' }}
               value={blogData.content}
               onChange={(value) => handleInputChange('content', value)}
